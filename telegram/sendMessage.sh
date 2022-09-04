@@ -1,4 +1,5 @@
-URL=$(cat /var/local/TELEGRAM_BOT_URL)
+ID=$(cat /var/local/TELEGRAM_BOT_ID)
+PASSWORD=$(cat /var/local/TELEGRAM_BOT_PASSWORD)
 CHAT_ID=$(cat /var/local/TELEGRAM_CHAT_ID)
 
 while getopts t: flag
@@ -18,4 +19,4 @@ echo "Sending Telegram Message: ${TEXT}"
 curl --request GET \
 	--data-urlencode chat_id="${CHAT_ID}" \
 	--data-urlencode text="${TEXT}" \
-	"$URL/sendMessage"
+	"https://api.telegram.org/bot${ID}:${PASSWORD}/sendMessage"
