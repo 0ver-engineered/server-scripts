@@ -1,21 +1,36 @@
 CHANNEL=$(cat /var/local/DISCORD_DM_CHANNEL)
 TOKEN=$(cat /var/local/DISCORD_BOT_TOKEN)
 
-while getopts t: flag
+while getopts "t:f:" flag
 do
 	case "${flag}" in
+		f) FILE=${OPTARG};;
 		t) TEXT=${OPTARG};;
 	esac
 done
 
-if [[ ${#TEXT} -lt 1 ]]; then
-	echo "Invalid text for message."
+if [[ ${#TEXT} -lt 1 && ${#FILE} -lt 1 ]]; then
+	echo "Invalid content for message. Needs either text or a file."
 	exit 0
 fi
 
 echo "Sending Discord Message: ${TEXT}"
 
-curl --request POST \
-	--data-urlencode content="${TEXT}" \
-	-H "Authorization: Bot ${TOKEN}" \
-	"https://discord.com/api/v10/channels/${CHANNEL}/messages"
+if [[ "${#TEXT}" -gt 0 && "${#FILE}" -gt 0 ]]; then
+	#	--data-urlencode content="${TEXT}" \
+	curl --request POST \
+		-H "Authorization: Bot ${TOKEN}" \
+		-F content="${TEXT}" \
+		-F file=@"${FILE}" \
+		"https://discord.com/api/v10/channels/${CHANNEL}/messages"
+elif [[ "${#FILE}" -gt 0 ]]; then
+	curl --request POST \
+		-H "Authorization: Bot ${TOKEN}" \
+		-F file=@"${FILE}" \
+		"https://discord.com/api/v10/channels/${CHANNEL}/messages"
+else
+	curl --request POST \
+		-H "Authorization: Bot ${TOKEN}" \
+		-F content="${TEXT}" \
+		"https://discord.com/api/v10/channels/${CHANNEL}/messages"
+fi
