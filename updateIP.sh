@@ -13,13 +13,13 @@ CURRENT_IP=$(curl ipinfo.io/ip)
 # Notify if response does not look like an IP Address
 if [[ ${#CURRENT_IP} -lt 7 || ${#CURRENT_IP} -gt 15 ]]; then
 	# Send Notification
-	bash /scripts/discord/sendMessage.sh -t "${ERROR_MSG}"
 	bash /scripts/telegram/sendMessage.sh -t "${ERROR_MSG}"
 
 	# Write Error
 	echo "${CURRENT_IP}" > $IP_ERROR_PATH
 
 	# Send Error Log
+	bash /scripts/discord/sendMessage.sh -t "${ERROR_MSG}" -f $IP_ERROR_PATH
 	bash /scripts/telegram/sendDocument.sh -d $IP_ERROR_PATH
 
 # Change locally stored IP and send notification
